@@ -62,12 +62,18 @@
                                         <label for="money">Giftcode</label>
                                         <input type="text" oninput="value=value.replace(/\D/g,'')" class="form-control" id="money" placeholder="Enter the amount">
                                     </div>
+                                    <div class="form-group money" >
+                                        <label for="claim">Max Claim</label>
+                                        <input type="number" class="form-control" id="claim" placeholder="Enter Max Claim">
+                                        
+                                    </div>
                                     <div class="form-group result" style="display: none;">
                                         <input type="text" class="form-control" id="money_result" placeholder="Link">
                                         <div class="input-group-text copy_link">
                                             <i class="fa fa-clone" aria-hidden="true"></i>
                                         </div>
                                     </div>
+                                    
     
                                     <button type="submit" class="btn btn-primary" id="submit" style="width: 100%;margin-top: 26px;">Submit</button>
                                 </div>
@@ -189,12 +195,14 @@
         $('#submit').click(function (e) { 
             e.preventDefault();
             let money = $('#money').val().trim();
-            if (money) {
+            let claim = $('#claim').val().trim();
+            if (money && claim) {
                 $.ajax({
                     type: "POST",
                     url: "/admin/manager/createBonus",
                     data: {
                         money: money,
+                        claim: claim,
                     },
                     dataType: "json",
                     success: function (response) {

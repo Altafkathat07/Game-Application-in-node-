@@ -695,6 +695,7 @@ const createBonus = async(req, res) => {
     let auth = req.cookies.auth;
     let money = req.body.money;
     let type = req.body.type;
+    let claim = req.body.claim;
 
 
     if (!money || !auth) {
@@ -787,8 +788,8 @@ const createBonus = async(req, res) => {
 
     if (!type) {
         let id_redenvelops = String(timerJoin()) + randomString(16);
-        let sql = `INSERT INTO redenvelopes SET id_redenvelope = ?, phone = ?, money = ?, used = ?, amount = ?, status = ?, time = ?`;
-        await connection.query(sql, [id_redenvelops, userInfo.phone, money, 1, 1, 0, time]);
+        let sql = `INSERT INTO redenvelopes SET id_redenvelope = ?, phone = ?, money = ?, used = ?, max_claims = ?, max_count = ?, amount = ?, status = ?, time = ?`;
+        await connection.query(sql, [id_redenvelops, userInfo.phone, money, 0, claim, 0, 1, 0, time]);
         return res.status(200).json({
             message: 'Successful change',
             status: true,

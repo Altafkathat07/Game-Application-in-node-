@@ -1202,7 +1202,8 @@ const listWithdraw = async(req, res) => {
 const useRedenvelope = async(req, res) => {
     let auth = req.cookies.auth;
     let code = req.body.code;
-    if(!auth || !code) {
+    let claim = req.body.claim;
+    if(!auth || !code || !claim) {
         return res.status(200).json({
             message: 'Failed',
             status: false,
@@ -1227,28 +1228,90 @@ const useRedenvelope = async(req, res) => {
             status: false,
             timeStamp: timeNow,
         });
-    } else {
+    }else {
         let infoRe = redenvelopes[0];
         const d = new Date();
         const time = d.getTime();
-        if (infoRe.status == 0) {
-            await connection.query('UPDATE redenvelopes SET used = ?, status = ? WHERE `id_redenvelope` = ? ', [0, 1, infoRe.id_redenvelope]); 
-            await connection.query('UPDATE users SET money = money + ? WHERE `phone` = ? ', [infoRe.money, userInfo.phone]); 
+
+        if (infoRe.status == 0 && infoRe.max_count < infoRe.max_claims) {
+           
+            if (infoRe.max_count >= infoRe.max_claims) {
+               
+                await connection.query('UPDATE redenvelopes SET used = ?, status = ? WHERE `id_redenvelope` = ?', [1, 1, infoRe.id_redenvelope]);
+            } else {
+
+                const userClaimed = await connection.query('SELECT * FROM redenvelopes_used');
+                const data = userClaimed[0];
+                const filteredData = data.filter(item => {
+                
+                   const  userDataCheck =  item.phone_used ===  userInfo.phone && item.id_redenvelops === infoRe.id_redenvelope;
+                    if (userDataCheck === true) {
+                        return true;
+                    }else{
+                        return false
+                    }
+                    
+                  });
+                
+                  if(filteredData.length !== 0){
+                    return res.status(200).json({
+                        message: 'User already claimed a gift code',
+                        status: false,
+                        timeStamp: timeNow,
+                    });
+                  }
+                
+
+               
+                await connection.query('UPDATE redenvelopes SET used = ?, max_count = ? WHERE `id_redenvelope` = ?', [0, infoRe.max_count+1,  infoRe.id_redenvelope]);
+                
+            }
+        
+
+           
+            await connection.query('UPDATE users SET money = money + ? WHERE `phone` = ?', [infoRe.money, userInfo.phone]);
+        
+            
             let sql = 'INSERT INTO redenvelopes_used SET phone = ?, phone_used = ?, id_redenvelops = ?, money = ?, `time` = ? ';
-            await connection.query(sql, [infoRe.phone, userInfo.phone, infoRe.id_redenvelope, infoRe.money, time]); 
+            await connection.query(sql, [infoRe.phone, userInfo.phone, infoRe.id_redenvelope, infoRe.money, time]);
+        
             return res.status(200).json({
-                message: `Get success +${infoRe.money}`,
+                message: `Received successfully +${infoRe.money}`,
                 status: true,
                 timeStamp: timeNow,
             });
         } else {
             return res.status(200).json({
-                message: 'Gift code has been used',
+                message: 'Gift code already used',
                 status: false,
                 timeStamp: timeNow,
             });
         }
     }
+
+    // } else {
+    //     let infoRe = redenvelopes[0];
+    //     const d = new Date();
+    //     const time = d.getTime();
+
+    //     if (infoRe.status == 0 ) {
+    //         await connection.query('UPDATE redenvelopes SET used = ?, status = ? WHERE `id_redenvelope` = ? ', [0, 1, infoRe.id_redenvelope]); 
+    //         await connection.query('UPDATE users SET money = money + ? WHERE `phone` = ? ', [infoRe.money, userInfo.phone]); 
+    //         let sql = 'INSERT INTO redenvelopes_used SET phone = ?, phone_used = ?, id_redenvelops = ?, money = ?, `time` = ? ';
+    //         await connection.query(sql, [infoRe.phone, userInfo.phone, infoRe.id_redenvelope, infoRe.money, time]); 
+    //         return res.status(200).json({
+    //             message: `Get success +${infoRe.money}`,
+    //             status: true,
+    //             timeStamp: timeNow,
+    //         });
+    //     } else {
+    //         return res.status(200).json({
+    //             message: 'Gift code has been used',
+    //             status: false,
+    //             timeStamp: timeNow,
+    //         });
+    //     }
+    // }
 }
 
 const callback_bank = async(req, res) => {
@@ -1278,7 +1341,7 @@ const callback_bank = async(req, res) => {
         await connection.query(`UPDATE recharge SET status = 2 WHERE id = ?`, [id]);
 
         return res.status(200).json({
-            message: 'Hủy đơn thành công',
+            message: 'Order canceled successfully',
             status: true,
             datas: recharge,
         });

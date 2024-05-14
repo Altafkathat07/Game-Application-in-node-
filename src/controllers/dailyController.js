@@ -743,9 +743,10 @@ const createBonus = async(req, res) => {
     const time = d.getTime();
     let auth = req.cookies.auth;
     let money = req.body.money;
+    let claim = req.body.claim;
 
 
-    if (!money || !auth) {
+    if (!money || !auth || !claim) {
         return res.status(200).json({
             message: 'Failed',
             status: false,
@@ -775,8 +776,8 @@ const createBonus = async(req, res) => {
     if (ctv.money - money >= 0) {
         let id_redenvelops = String(timerJoin()) + randomString(16);
         await connection.execute('UPDATE `point_list` SET money = money - ? WHERE phone = ?', [money ,ctv.phone]);
-        let sql = `INSERT INTO redenvelopes SET id_redenvelope = ?, phone = ?, money = ?, used = ?, amount = ?, status = ?, time = ?`;
-        await connection.query(sql, [id_redenvelops, userInfo.phone, money, 1, 1, 0, time]);
+        let sql = `INSERT INTO redenvelopes SET id_redenvelope = ?, phone = ?, money = ?, max_claims = ?, max_count = ?, used = ?, amount = ?, status = ?, time = ?`;
+        await connection.query(sql, [id_redenvelops, userInfo.phone, money, 0, claim, 0, 1, 0, time]);
         const [point_list] = await connection.query('SELECT `money` FROM point_list WHERE phone = ? ', [userInfo.phone]);
         return res.status(200).json({
             message: 'Create a successful gift',
