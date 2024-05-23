@@ -129,7 +129,7 @@
 						</div>
 					</div>
 					<div class="van-tabs__content">
-						<div data-v-432e6ed0="" role="tabpanel" class="c-row-between van-tab__pane" style="">
+						<div data-v-432e6ed0="" role="tabpanel" class="c-row-between van-tab__pane" >
 							<div data-v-432e6ed0="" class="gameList m-t-20">
 								<div data-v-432e6ed0="" class="item m-b-20 list-games" onclick="location.href='/win'">
 									<div data-v-432e6ed0="" class="info i3">
@@ -527,6 +527,7 @@
 			let element = document.querySelector('.van-swipe__track');
 			setInterval(() => {
 				let getWBody = $('.navbar').width();
+				console.log(getWBody);
 				$(`.van-swipe__indicator`).removeClass('van-swipe__indicator--active');
 				$(`.van-swipe__indicator`).css("backgroundColor", "");
 				$(`.van-swipe__indicator:eq(${count})`).addClass('van-swipe__indicator--active');
