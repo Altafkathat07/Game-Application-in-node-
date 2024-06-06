@@ -633,7 +633,7 @@ $(".foot .right").click(function (e) {
       alertMessJoin(response.message);
       if (response.status === false) return;
       $("#history-order").prepend(response.data);
-      $(".total-box .num span").text(response.money + ".00 ₫ ");
+      $(".total-box .num span").text(response.money + ".00  ");
       socket.emit('data-server_2', { money: x * money, join, time: Date.now(), change: response.change });
     },
   });
@@ -680,7 +680,7 @@ function showListOrder(list_orders, x) {
                         </div>
                         <div data-v-a9660e98="" class="van-col van-col--5">
                             <div data-v-a9660e98="" class="c-tc goItem">
-                                <!---->
+                              
                                 <span data-v-a9660e98="" class="${
                                   list_orders.amount % 2 == 0 ? "red" : "green"
                                 }"> ${list_orders.amount} </span>
@@ -691,7 +691,6 @@ function showListOrder(list_orders, x) {
                                 <span data-v-a9660e98=""> ${
                                   list_orders.amount < 5 ? "Small" : "Big"
                                 } </span>
-                                <!---->
                             </div>
                         </div>
                         <div data-v-a9660e98="" class="van-col van-col--6">
