@@ -67,8 +67,8 @@ socket.on("data-server", function (msg) {
   if(msg.data[0].game != 'wingo') return;
   $(".Loading").fadeIn(0);
   setTimeout(() => {
-    let data1 = msg.data[0]; // lấy ra cầu mới nhất
-    let data2 = []; // lấy ra cầu cũ
+    let data1 = msg.data[0];
+    let data2 = []; 
     let data3 = data2.push(msg.data[1]);
     $(".time-box .info .number").text(data1.period);
     showListOrder3(data2, 0);
@@ -153,13 +153,6 @@ socket.on("data-server", function (msg) {
     $(".Loading").fadeOut(0);
   }, 1000);
 });
-// $('body').click(function (e) {
-//     e.preventDefault();
-//     socket.emit('data-server', {
-//         name: 'Longdz',
-//     });
-// });
-
 var audio1 = new Audio("/audio/di1.da40b233.mp3");
 var audio2 = new Audio("/audio/di2.317de251.mp3");
 
